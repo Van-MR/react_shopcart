@@ -1,65 +1,48 @@
-import React, { createContext, Component }from 'react'
+import React, { createContext, useReducer } from 'react'
+import { shopReducer, ADD_PRODUCT, REMOVE_PRODUCT } from './reducer';
+
+
 
 export const ShopContext = createContext()
 
-class ShopContextProvider extends Component {
-  state = {
-   products: [
-     { id: 'p1', title: 'Gaming Mouse', price: 29.99 },
-     { id: 'p2', title: 'Harry Potter 3', price: 9.99 },
-     { id: 'p3', title: 'Used plastic bottle', price: 0.99 },
-     { id: 'p4', title: 'Half-dried plant', price: 2.99 }
-   ],
-   cart: []
-  };
 
-  addProductToCart = product => {
-     const updatedCart = [...this.state.cart]
-     const updatedItemIndex = updatedCart.findIndex( item => item.id === product.id)
+const ShopContextProvider = props => {
+    //destruct
+    const products = [
+       { id: 'p1', title: 'Gaming Mouse', price: 29.99 },
+       { id: 'p2', title: 'Harry Potter 3', price: 9.99 },
+       { id: 'p3', title: 'Used plastic bottle', price: 0.99 },
+       { id: 'p4', title: 'Half-dried plant', price: 2.99 }
+     ]
 
-     if(updatedItemIndex < 0) {
-        updatedCart.push({...product,quanity: 1})
-     } else {
-       const updatedItem = {...updatedCart[updatedItemIndex]}
-       updatedItem.quanity++
-       updatedCart[updatedItemIndex] = updatedItem
-     }
+    const [cartState, dispatch ] = useReducer(shopReducer, { cart: [] });
 
-     setTimeout(() => {
-       this.setState({cart:updatedCart})
-     },700)
-  }
 
-  removeProductFromCart = productId => {
-    const updatedCart = [...this.state.cart]
-    const updatedItemIndex = updatedCart.findIndex( item => item.id === productId)
-    const updatedItem = {...updatedCart[updatedItemIndex]}
-    updatedItem.quanity--
-    if(updatedItem.quanity <= 0) {
-       updatedCart.splice(updatedItemIndex,1)
-    } else {
-      updatedCart[updatedItemIndex] = updatedItem
+    const addProductToCart = product => {
+      setTimeout(() => {
+         dispatch({ type: ADD_PRODUCT, product: product });
+       }, 700);
     }
 
-    setTimeout(() => {
-      this.setState({cart: updatedCart})
-    },700)
-  }
+    const removeProductFromCart = productId => {
+      setTimeout(() => {
+          dispatch({ type: REMOVE_PRODUCT, productId: productId });
+      }, 700);
+    }
 
 
-  render() {
     return (
        <ShopContext.Provider
          value={{
-           ...this.state,
-           addProductToCart:this.addProductToCart,
-           removeProductFromCart:this.removeProductFromCart
+           cart: cartState.cart,
+           products:products,
+           addProductToCart:addProductToCart,
+           removeProductFromCart:removeProductFromCart
          }}
          >
-            {this.props.children}
+          { props.children }
        </ShopContext.Provider>
     )
-  }
 }
 
 export default ShopContextProvider

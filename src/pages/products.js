@@ -1,9 +1,15 @@
-import React, { Component } from 'react'
+import React from 'react'
+import { useContext, useEffect } from 'react'
 import { ShopContext } from '../context/shop-context'
 import './products.css'
 
-class Products extends Component{
-    render() {
+const Products = props => {
+    const contetx = useContext(ShopContext)
+
+     useEffect(() => {
+       console.log(contetx);
+     })
+
       return (
         <ShopContext.Consumer>
            { context => {
@@ -29,7 +35,6 @@ class Products extends Component{
            }}
         </ShopContext.Consumer>
       )
-    }
 }
 
 
